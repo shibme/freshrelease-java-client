@@ -34,17 +34,17 @@
         <project.owner.id>shibme</project.owner.id>
         <project.jdk.version>8</project.jdk.version>
         <!--suppress UnresolvedMavenProperty -->
-        <gitlab.project_id>${env.GL_PACKAGES_PROJECT_ID}</gitlab.project_id>
+        <gitlab.packages.project_id>${env.GL_PACKAGES_PROJECT_ID}</gitlab.packages.project_id>
     </properties>
 
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/${gitlab.project_id}/packages/maven</url>
+            <url>https://gitlab.com/api/v4/projects/${gitlab.packages.project_id}/packages/maven</url>
         </repository>
         <snapshotRepository>
             <id>gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/${gitlab.project_id}/packages/maven</url>
+            <url>https://gitlab.com/api/v4/projects/${gitlab.packages.project_id}/packages/maven</url>
         </snapshotRepository>
     </distributionManagement>
 

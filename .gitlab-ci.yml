@@ -8,4 +8,4 @@ Publishing to Package Registry:
   script:
     - mvn deploy -s .m2/settings.xml
   only:
-    - main
+    - master

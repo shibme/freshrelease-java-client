@@ -1,0 +1,11 @@
+image: maven:3-jdk-11
+
+stages:
+  - "Release"
+
+Publishing to Package Registry:
+  stage: "Release"
+  script:
+    - mvn deploy -s .m2/settings.xml
+  only:
+    - main

@@ -38,11 +38,11 @@
 
     <distributionManagement>
         <repository>
-            <id>gitlab-maven</id>
+            <id>shibme-gitlab-maven</id>
             <url>https://gitlab.com/api/v4/projects/${gitlab.packages.project_id}/packages/maven</url>
         </repository>
         <snapshotRepository>
-            <id>gitlab-maven</id>
+            <id>shibme-gitlab-maven</id>
             <url>https://gitlab.com/api/v4/projects/${gitlab.packages.project_id}/packages/maven</url>
         </snapshotRepository>
     </distributionManagement>

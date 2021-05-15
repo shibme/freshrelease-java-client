@@ -52,7 +52,7 @@ public final class FreshRelease {
                 .build();
         this.api = retrofit.create(FreshReleaseAPI.class);
         try {
-            System.out.println("Authenticated As: " + getCurrentSession().getUser());
+            getCurrentSession();
         } catch (FreshReleaseException e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("unauthorized")) {
                 throw new FreshReleaseException("Unauthorised. Please verify the URL or API token.");
@@ -113,7 +113,7 @@ public final class FreshRelease {
         return url;
     }
 
-    public FreshReleaseAPI.Session getCurrentSession() throws FreshReleaseException {
+    private FreshReleaseAPI.Session getCurrentSession() throws FreshReleaseException {
         try {
             Response<FreshReleaseAPI.Session> response = api.getCurrentSession().execute();
             handleResponse(response);
@@ -121,6 +121,10 @@ public final class FreshRelease {
         } catch (IOException e) {
             throw new FreshReleaseException(e);
         }
+    }
+
+    public User getCurrentUser() throws FreshReleaseException {
+        return getCurrentSession().getUser();
     }
 
     public UserList searchUsersByName(String keyword, int limit, int page) throws FreshReleaseException {

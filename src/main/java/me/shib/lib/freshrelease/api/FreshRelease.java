@@ -3,6 +3,7 @@ package me.shib.lib.freshrelease.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -14,6 +15,7 @@ public final class FreshRelease {
 
     private static final transient String FRESHRELEASE_URL = System.getenv("FRESHRELEASE_URL");
     private static final transient String FRESHRELEASE_API_TOKEN = System.getenv("FRESHRELEASE_API_TOKEN");
+    private static final transient String FRESHRELEASE_HTTP_LOGGING = System.getenv("FRESHRELEASE_HTTP_LOGGING");
     private static final transient int defaultPerPage = 250;
     private static final transient Map<String, FreshRelease> clientMap = new HashMap<>();
 
@@ -21,17 +23,20 @@ public final class FreshRelease {
     private final transient FreshReleaseAPI api;
     private final transient Gson gson;
 
-    private FreshRelease(String url, String apiKey) throws IOException, FreshReleaseException {
+    private FreshRelease(String url, String apiToken, boolean httpLogging) throws FreshReleaseException {
         if (url == null || url.isEmpty()) {
             throw new FreshReleaseException("The given FreshRelease URL in not set");
         }
-        if (apiKey == null || apiKey.isEmpty()) {
+        if (apiToken == null || apiToken.isEmpty()) {
             throw new FreshReleaseException("FreshRelease API key is not set");
         }
-        String authToken = "Token token=" + apiKey;
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new FreshReleaseAuth(authToken))
-                .build();
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                .addInterceptor(new FreshReleaseAuth(apiToken));
+        if (httpLogging) {
+            okHttpClientBuilder.addInterceptor(new HttpLoggingInterceptor()
+                    .setLevel(HttpLoggingInterceptor.Level.BODY));
+        }
+        OkHttpClient okHttpClient = okHttpClientBuilder.build();
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, new GsonUTCDateAdapter())
                 .create();
@@ -46,17 +51,29 @@ public final class FreshRelease {
                 .addConverterFactory(GsonConverterFactory.create(this.gson))
                 .build();
         this.api = retrofit.create(FreshReleaseAPI.class);
-        validateApiToken();
+        try {
+            System.out.println("Authenticated As: " + getCurrentSession().getUser());
+        } catch (FreshReleaseException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("unauthorized")) {
+                throw new FreshReleaseException("Unauthorised. Please verify the URL or API token.");
+            } else {
+                throw e;
+            }
+        } catch (Exception e) {
+            throw new FreshReleaseException(e);
+        }
     }
 
     public static synchronized FreshRelease getInstance(String baseUrl, String apiKey)
-            throws IOException, FreshReleaseException {
+            throws FreshReleaseException {
+        boolean httpLogging = FRESHRELEASE_HTTP_LOGGING != null &&
+                FRESHRELEASE_HTTP_LOGGING.equalsIgnoreCase("TRUE");
         if (baseUrl != null && !baseUrl.isEmpty() &&
                 apiKey != null && !apiKey.isEmpty()) {
             String clientIdentifier = baseUrl + apiKey;
             FreshRelease client = clientMap.get(clientIdentifier);
             if (client == null) {
-                client = new FreshRelease(baseUrl, apiKey);
+                client = new FreshRelease(baseUrl, apiKey, httpLogging);
                 clientMap.put(clientIdentifier, client);
             }
             return client;
@@ -64,7 +81,7 @@ public final class FreshRelease {
         return null;
     }
 
-    public static FreshRelease getInstance() throws FreshReleaseException, IOException {
+    public static FreshRelease getInstance() throws FreshReleaseException {
         if (FRESHRELEASE_URL == null || FRESHRELEASE_URL.isEmpty()) {
             throw new FreshReleaseException("Please set FRESHRELEASE_URL environment variable");
         }
@@ -96,16 +113,14 @@ public final class FreshRelease {
         return url;
     }
 
-    private void validateApiToken() throws IOException, FreshReleaseException {
-        Response<FreshReleaseAPI.SignInResponse> response = api.signIn().execute();
-        if (response.code() == 201) {
-            if (response.body() != null) {
-                if (response.body().success) {
-                    return;
-                }
-            }
+    public FreshReleaseAPI.Session getCurrentSession() throws FreshReleaseException {
+        try {
+            Response<FreshReleaseAPI.Session> response = api.getCurrentSession().execute();
+            handleResponse(response);
+            return response.body();
+        } catch (IOException e) {
+            throw new FreshReleaseException(e);
         }
-        throw new FreshReleaseException("Unauthorised. Please verify the API token.");
     }
 
     public UserList searchUsersByName(String keyword, int limit, int page) throws FreshReleaseException {

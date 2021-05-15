@@ -40,6 +40,6 @@ public final class User {
 
     @Override
     public String toString() {
-        return getEmail();
+        return getName() + " [" + getEmail() + "]";
     }
 }

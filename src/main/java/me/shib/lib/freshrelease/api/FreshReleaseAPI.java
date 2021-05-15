@@ -9,8 +9,8 @@ import java.util.Map;
 
 interface FreshReleaseAPI {
 
-    @POST("sign_in")
-    Call<SignInResponse> signIn();
+    @GET("sessions/current")
+    Call<Session> getCurrentSession();
 
     @POST("{project_key}/issues")
     Call<IssueDetail> createIssue(@Path("project_key") String projectKey,
@@ -93,7 +93,7 @@ interface FreshReleaseAPI {
     @GET("{project_key}/workflows")
     Call<WorkflowList> getWorkflowList(@Path("project_key") String projectKey);
 
-    class IssueRequest {
+    final class IssueRequest {
         private final Issue issue;
 
         IssueRequest(Issue issue) {
@@ -101,34 +101,37 @@ interface FreshReleaseAPI {
         }
     }
 
-    class CommentList {
+    final class CommentList {
         List<Comment> comments;
     }
 
-    class CommentResponse {
+    final class CommentResponse {
         Comment comment;
     }
 
-    class StatusList {
+    final class StatusList {
         List<Status> statuses;
     }
 
-    class PriorityList {
+    final class PriorityList {
         List<Priority> priorities;
     }
 
-    class IssueTypeList {
+    final class IssueTypeList {
         List<IssueType> issue_types;
     }
 
-    class SubProjectList {
+    final class SubProjectList {
         List<Project> sub_projects;
     }
 
-    class SignInResponse {
-        boolean success;
-        String token;
-        String email;
+    final class Session {
+
+        private User user;
+
+        User getUser() {
+            return user;
+        }
     }
 
 }

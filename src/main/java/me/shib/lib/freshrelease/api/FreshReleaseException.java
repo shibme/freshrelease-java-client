@@ -6,6 +6,6 @@ public final class FreshReleaseException extends Exception {
     }
 
     public FreshReleaseException(Exception e) {
-        super(e.getMessage(), e.getCause());
+        super(e);
     }
 }

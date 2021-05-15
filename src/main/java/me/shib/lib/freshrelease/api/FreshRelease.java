@@ -277,7 +277,6 @@ public final class FreshRelease {
                 Issue issue = issueDetail.getIssue();
                 issue.setFreshRelease(this);
                 issue.setProjectKey(projectKey);
-                issue.setProjectKey(issueUpdate.getProjectKey());
                 issue.setIssueTypes(issueDetail.getIssue_types());
                 issue.setPriorities(issueDetail.getPriorities());
                 issue.setStatuses(issueDetail.getStatuses());

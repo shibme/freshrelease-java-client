@@ -222,11 +222,13 @@ public final class Issue {
     }
 
     void setTransitions(Collection<Transition> transitions) {
-        if (transitionMap == null) {
-            transitionMap = new HashMap<>();
-        }
-        for (Transition transition : transitions) {
-            transitionMap.put(transition.getId(), transition);
+        if (transitions != null) {
+            if (transitionMap == null) {
+                transitionMap = new HashMap<>();
+            }
+            for (Transition transition : transitions) {
+                transitionMap.put(transition.getId(), transition);
+            }
         }
     }
 

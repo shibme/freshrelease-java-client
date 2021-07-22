@@ -55,6 +55,46 @@ public final class Query {
         return this;
     }
 
+    public Query add(Query.Condition condition, Query.Operator operator, Value... values) {
+        if (values != null && values.length > 0) {
+            return add(condition, operator, Arrays.asList(values));
+        }
+        return this;
+    }
+
+    public Query add(Query.Condition condition, Query.Operator operator, String... values) {
+        if (values != null && values.length > 0) {
+            List<Value> valueList = new ArrayList<>();
+            for (String value : values) {
+                valueList.add(new Value(value));
+            }
+            return add(condition, operator, valueList);
+        }
+        return this;
+    }
+
+    public Query add(Query.Condition condition, Query.Operator operator, Long... values) {
+        if (values != null && values.length > 0) {
+            List<Value> valueList = new ArrayList<>();
+            for (Long value : values) {
+                valueList.add(new Value(value));
+            }
+            return add(condition, operator, valueList);
+        }
+        return this;
+    }
+
+    public Query add(Query.Condition condition, Query.Operator operator, Date... values) {
+        if (values != null && values.length > 0) {
+            List<Value> valueList = new ArrayList<>();
+            for (Date value : values) {
+                valueList.add(new Value(value));
+            }
+            return add(condition, operator, valueList);
+        }
+        return this;
+    }
+
     public Query add(Query.Condition condition, Query.Operator operator, Value value) {
         QueryItem queryItem = new QueryItem(condition, operator, value);
         this.queryItemsMap.put(condition, queryItem);

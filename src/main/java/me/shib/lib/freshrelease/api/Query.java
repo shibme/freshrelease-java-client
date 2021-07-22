@@ -95,12 +95,6 @@ public final class Query {
         return this;
     }
 
-    public Query add(Query.Condition condition, Query.Operator operator, Value value) {
-        QueryItem queryItem = new QueryItem(condition, operator, value);
-        this.queryItemsMap.put(condition, queryItem);
-        return this;
-    }
-
     Map<String, String> toQueryMap() {
         Map<String, String> queryMap = new HashMap<>();
         List<QueryItem> queryItems = new ArrayList<>(queryItemsMap.values());

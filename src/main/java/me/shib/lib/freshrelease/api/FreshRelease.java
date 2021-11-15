@@ -55,7 +55,7 @@ public final class FreshRelease {
             getCurrentSession();
         } catch (FreshReleaseException e) {
             if (e.getMessage() != null && e.getMessage().toLowerCase().contains("unauthorized")) {
-                throw new FreshReleaseException("Unauthorised. Please verify the URL or API token.");
+                throw new FreshReleaseException("Unauthorised. Please verify the API token.");
             } else {
                 throw e;
             }

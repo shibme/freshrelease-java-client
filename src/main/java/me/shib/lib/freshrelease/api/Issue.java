@@ -536,7 +536,7 @@ public final class Issue {
 
     @Override
     public String toString() {
-        return getKey();
+        return key + ":\t" + title;
     }
 
     public class IssueUpdate {
